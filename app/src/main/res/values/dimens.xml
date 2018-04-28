@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="height_item_divider" format="float" type="dimen">0.5dp</dimen>
+    <dimen name="size_10">10dp</dimen>
+    <dimen name="size_80">80dp</dimen>
+    <dimen name="text_size_user_title">20sp</dimen>
+    <dimen name="text_size_small">15sp</dimen>
+    <dimen name="size_2">2dp</dimen>
+    <dimen name="size_5">5dp</dimen>
+</resources>
