@@ -3,6 +3,7 @@ package com.gitTask.gitusers.Users;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -253,7 +254,8 @@ public class UserFragment extends Fragment implements UserContract.View {
                 userViewHolder.userIdTextView.setText(gitUser.getId() == null ? "" : gitUser.getId());
                 userViewHolder.isAdminTextView.setText(String.valueOf(gitUser.isSiteAdmin()));
                 userViewHolder.urlTextView.setText(String.valueOf(gitUser.getHtmlUrl()));
-                userViewHolder.userIconImageView.setImageBitmap(getGitUserBitmap(gitUser.getAvatarUrl()));
+//                userViewHolder.userIconImageView.setImageBitmap(getGitUserBitmap(gitUser.getAvatarUrl()));
+                new loadUserImage(gitUser.getAvatarUrl(),userViewHolder.userIconImageView).execute();
             } else if (holder instanceof LoadingViewHolder) {
                 LoadingViewHolder loadingViewHolder = (LoadingViewHolder) holder;
                 loadingViewHolder.progressBar.setIndeterminate(true);
@@ -265,21 +267,21 @@ public class UserFragment extends Fragment implements UserContract.View {
             return userList.size();
         }
 
-        public Bitmap getGitUserBitmap(String src){
-          try{
-              URL url = new URL(src);
-              HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-              connection.setDoInput(true);
-              connection.connect();
-              InputStream input = connection.getInputStream();
-              Bitmap userImageBitmap = BitmapFactory.decodeStream(input);
-              return userImageBitmap;
-          }
-          catch (IOException e){
-              e.printStackTrace();
-              return null;
-          }
-        }
+//        public Bitmap getGitUserBitmap(String src){
+//          try{
+//              URL url = new URL(src);
+//              HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+//              connection.setDoInput(true);
+//              connection.connect();
+//              InputStream input = connection.getInputStream();
+//              Bitmap userImageBitmap = BitmapFactory.decodeStream(input);
+//              return userImageBitmap;
+//          }
+//          catch (IOException e){
+//              e.printStackTrace();
+//              return null;
+//          }
+//        }
 
         @Override
         public int getItemViewType(int position) {
@@ -365,6 +367,38 @@ public class UserFragment extends Fragment implements UserContract.View {
                 Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
             }
         });
+    }
+ // Load the user's profile image in backgroud thread
+    private class loadUserImage extends AsyncTask<Void,Void,Bitmap>{
+        private String mUrl;
+        private ImageView mImageView;
+        public loadUserImage(String url, ImageView imageView){
+            this.mUrl = url;
+            this.mImageView = imageView;
+        }
+
+        @Override
+        protected Bitmap doInBackground(Void... voids) {
+            try{
+                URL url = new URL(mUrl);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setDoInput(true);
+                connection.connect();
+                InputStream input = connection.getInputStream();
+                Bitmap userImageBitmap = BitmapFactory.decodeStream(input);
+                return userImageBitmap;
+            }
+            catch (IOException e){
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            super.onPostExecute(bitmap);
+            mImageView.setImageBitmap(bitmap);
+        }
     }
 
 }
